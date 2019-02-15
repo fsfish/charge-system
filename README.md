@@ -3,7 +3,7 @@
 #### 技术栈
 
 - spring
-- hibernate
+- Jpa
 - spring boot
 - mongodb
 - redis
