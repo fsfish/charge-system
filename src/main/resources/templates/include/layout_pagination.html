@@ -1,0 +1,20 @@
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="pagination(url, page)">
+        <ul class="pagination pagination-sm">
+          <li th:text="${'总:' + page.totalCount + '条  共:' + page.totalPages + '页'}" style="display:inline-block;float:left;margin-right:9px;line-height:28px;"></li>
+          <li>
+            <a class="fenye" th:href="@{${url}(page=0, size=${page.size})}"><<</a>
+          </li>
+          <li th:each="item: ${page.pageItems}"
+              th:classappend="${item.current ? 'active' : ''}">
+            <a class="fenye" th:href="@{${url}(page=${item.number}, size=${page.size})}"
+               th:text="${item.number + 1}" >100</a>
+          </li>
+          <li>
+            <a class="fenye" th:href="@{${url}(page=${page.totalPages - 1}, size=${page.size})}">>></a>
+          </li>
+        </ul>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+server:
+  port: 8888
+  max-http-header-size: 67108864
+  servlet:
+    session:
+      tracking-modes: cookie
+      timeout: 86400
+      cookie:
+        http-only: true
+  compression:
+    enabled: true
+  tomcat:
+    accesslog:
+      enabled: true
+      buffered: false
+      request-attributes-enabled: true
+      directory: /var/peaner/logs
+      file-date-format: .yyyy-MM-dd
+      pattern: c %A - %l %h %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i" "%D"
+      prefix: access_log
+      suffix: .log
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/zwt_charge?useUnicode=true&characterEncoding=UTF-8&verifyServerCertificate=false&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+#    hikari:
+#      maximum-pool-size: 10
+#      connection-timeout: 20
+#      connection-test-query: select 1
+
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.MySQL57Dialect
+
+  redis:
+    host: localhost
+    port: 6379
+#    password: ***
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm
+    time-zone: GMT+8
+
+  mvc:
+    static-path-pattern: /static/**
+    favicon:
+      enabled: false
+
+  thymeleaf:
+    cache: false
+
+  rabbitmq:
+    addresses: localhost:5688
+    username: guest
+    password: guest
+    virtual-host: /
+    ## 消费者配置
+    listener:
+      simple:
+        concurrency: 5
+        ##manual：手动 ack（确认）
+        acknowledge-mode: manual
+        max-concurrency: 10
+        prefetch: 1
+
+    ## 生产者配置
+    publisher-confirms: true
+    publisher-returns: true
+    template:
+      mandatory: true
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: admin
+      username: root
+      password: root
+
+rabbit:
+  queue:peaner-dev-005
+
+logging:
+  config: classpath:logback.xml

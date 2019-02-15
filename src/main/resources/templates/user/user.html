@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head lang="zh-cn" th:replace="include/layout :: common_head (~{::title}, ~{::meta}, ~{::link})">
+    <title>用户列表</title>
+    <link rel="stylesheet/less" type="text/css" th:href="@{/static/style/error.less}"/>
+</head>
+<body th:replace="include/layout :: common_body (3, 1, ~{::div}, ~{::script}, null)">
+<div class="page-content" style="min-height: 1144px;">
+    <ol class="breadcrumb">
+        <li><a th:href="@{/user}">用户列表</a></li>
+    </ol>
+    <div>
+        <form class="form-inline" th:action="@{/user}" th:method="get">
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" placeholder="登录名" name="username" th:value="${query.username}">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" placeholder="昵称" name="nickname" th:value="${query.nickname}">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" placeholder="手机号" name="mobile" th:value="${query.mobile}">
+            </div>
+            <button type="submit" class="btn btn-default btn-sm">搜索</button>
+            <br>
+            <br>
+            <a class="btn btn-default btn-sm operation-buttons" th:href="@{/user/add-user}">添加用户</a>
+        </form>
+    </div>
+    <div class="portlet-body">
+        <div class="table-scrollable">
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>昵称</th>
+                    <th>手机号</th>
+                    <th>注册时间</th>
+                    <th>禁用</th>
+                    <th>用户类型</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody class="user-list">
+                <tr th:each="user : ${page.content}">
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.nickname}"></td>
+                    <td th:text="${user.mobile}"></td>
+                    <td th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${user.disabled ? '是' : '否'}"></td>
+                    <td th:text="${user.userType == 0 ? '超级管理员' : '操作管理员'}"></td>
+                    <td>
+                        <a th:href="@{'/user/edit-user/' + ${user.id}}">编辑</a>
+                        <a href="javascript:;" th:data-id="${user.id}" class="disable" th:if="${user.disabled == false}">禁用</a>
+                        <a href="javascript:;" th:data-id="${user.id}" class="actived" th:if="${user.disabled == true}">激活</a>
+                        <a th:data="${user.id}" class="del-userId">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:replace="include/layout_pagination :: pagination(@{/user(username=${query.username},nickname=${query.nickname},mobile=${query.mobile})}, ${page})"></div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">删除用户</h4>
+            </div>
+            <div class="modal-body">
+                <p>确认删除该用户？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary delete-device-submit">删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+
+        var userId = null
+        $('.del-userId').on('click', function (e) {
+            $(".modal").modal({show: true, backdrop:"static"})
+            userId = $(this).attr('data')
+            console.log(userId, 'userId-------');
+        })
+        $('.delete-device-submit').click(function () {
+            $.ajax({
+                url: '/user/'+ userId,
+                type: 'post',
+                success: function (data) {
+                    console.log('data', data)
+                    window.location.reload();
+                }
+            })
+        })
+
+        $('.disable').on('click', function (e) {
+            userId = $(this).attr('data-id')
+            var operation = true
+            console.log('useId-------', userId)
+            $.ajax({
+                url:'/users/ajax/' + userId + '/' + operation,
+                type: 'post',
+                success: function () {
+                    window.location.reload();
+                }
+            })
+        })
+
+        $('.actived').on('click', function (e) {
+            userId = $(this).attr('data-id')
+            var operation = false
+            console.log('useId-------', userId)
+            $.ajax({
+                url:'/users/ajax/' + userId + '/' + operation,
+                type: 'post',
+                success: function () {
+                    window.location.reload();
+                }
+            })
+        })
+    })
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').focus()
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <define name="hostname" class="ch.qos.logback.core.property.CanonicalHostNamePropertyDefiner"></define>
+
+    <property resource="logback.properties"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%highlight(%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line - %msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="rollingFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log-path}/${log-file-name}-${hostname}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log-path}/${log-file-name}-${hostname}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${max-file-size}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%highlight(%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line - %msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.apache" level="INFO" />
+    <logger name="com.squareup" level="INFO" />
+    <logger name="com.google" level="INFO" />
+    <!--<logger name="org.quartz" level="DEBUG" />-->
+
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="rollingFile" />
+    </root>
+
+</configuration>
